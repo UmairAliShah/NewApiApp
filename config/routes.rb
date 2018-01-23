@@ -10,6 +10,8 @@ Rails.application.routes.draw do
            patch :update_img
            patch :set_online
            patch :set_offline
+           patch :update_location
+           get :distance
          end
        end
      end
