@@ -1,8 +1,6 @@
 class Api::V1::ProfilesController < ApplicationController
 
-
   def create
-
     begin
 
         @user = User.find_by_authentication_token(params[:user_token])
@@ -115,13 +113,49 @@ class Api::V1::ProfilesController < ApplicationController
     end
   end
 
+
   def distance
-    #debugger
-    @dis = Geocoder::Calculations.distance_between([31.554606,74.357158], [31.588830,74.305665])
-    #@dis = Geocoder::Calculations.distance_between(31.5546, 74.3571, 31.5925, 74.3095, {})
-    @dis = Geocoder::Calculations.to_kilometers(@dis)
-    render json: @dis.as_json()
+    @debugger
+    #begin
+      @user = User.find_by_authentication_token(params[:user_token])
+      if @user && @user.profile != nil
+        params[:id] = @user.id
+        @all_users = User.where("id != '#{params[:id]}'")
+        if params[:distance] == 5
+          render json: @all_users.as_json()
+        else
+          lat1 = @user.profile.latitude
+          long1 = @user.profile.longitude
+          @id_arrays = []#Array.new{[]}
+          @filter_users = []#Array.new{[]}
+          @all_users.each do |u|
+            #@distance = 10
+
+            @distance  = Geocoder::Calculations.distance_between([lat1,long1], [lat1,long1])
+            @distance = Geocoder::Calculations.to_kilometers(@distance)
+            if @distance > 0 && @distance <= 500 && params[:distance] == 4
+              @id_arrays << u.id
+            elsif @distance > 0 && @distance <= 300 && params[:distance] == 3
+              @id_arrays << u.id
+            elsif @distance > 0 && @distance <= 100 && params[:distance] == 2
+              @id_arrays << u.id
+            elsif @distance > 0 && @distance <= 50 && params[:distance] == 1
+              @id_arrays << u.id
+            elsif @distance > 0 && @distance <= 20 && params[:distance] == 0
+              @id_arrays << u.id
+            end
+          end
+          render json: @distance.as_json()
+        end
+      else
+        render json: "-1"
+      end
+    rescue
+       render json: "-2"
+    end
   end
+
+
 
   private
 

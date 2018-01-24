@@ -11,7 +11,7 @@ Rails.application.routes.draw do
            patch :set_online
            patch :set_offline
            patch :update_location
-           get :distance
+           post :distance
          end
        end
      end
